@@ -12,7 +12,7 @@ def egcd(a, b):
         g, x, y = egcd(b % a, a)
         return (g, y - (b // a) * x, x)
 
-
+# Chinese remainder function
 def chinese_remainder(n, a):
     sum = 0
     prod = reduce(lambda a, b: a*b, n)
@@ -33,8 +33,7 @@ def mul_inv(a, b):
     if x1 < 0: x1 += b0
     return x1
 
-# works with py3
-#Tonelli-Shanks algorithm
+# Tonelli-Shanks algorithm
 def legendre(a, p):
     return pow(a, (p - 1) // 2, p)
  

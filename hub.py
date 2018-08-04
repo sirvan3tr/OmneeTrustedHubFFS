@@ -1,7 +1,12 @@
+'''
+ Author: Sirvan Almasi @ Imperial College London
+ August 2018
+ Dissertation Project
+'''
+
 from functions import *
+import os
 import hmac, hashlib, random
-
-
 
 #16 bit primes, generated using openssl
 #not to be used for production
@@ -13,40 +18,9 @@ k = 1 # number of keys
 
 idRaw = 'Sirvan Almasi || 26/01/1992 || Saqqez || Sirvan3tr@gmail.com'
 
-jIndices = []
-publicKeys = []
-
-'''
-k = 0
-for i in range(0,5):
-    print i
-    digest_maker = hmac.new(str(i), idRaw, hashlib.sha256)
-    digest = digest_maker.hexdigest()
-    try:
-        c1 = tonelli(int(digest,16),p)
-        c2 = tonelli(int(digest,16),q)
-        jIndices.append(i)
-        publicKeys.append(digest)
-        print digest.hex()
-        if k == 5:
-            break
-        k += 1
-    except:
-        continue
-
-print jIndices
-
-hash = 1
-idRawHex = idRaw.encode('hex')
-for i in range(0, len(idRawHex)):
-    hash = hash*11 + int(idRawHex[i], 16)
-
-# HexByte with : sep'
-":".join("{:02x}".format(ord(c)) for c in idRaw)
-
-print "my hash: "
-print hash % n
-'''
+jIndices = [] # indices for our supposed pseudorandom functino
+publicKeys = [] # the final public keys
+secretKeys = [] # secret keys generated
 
 '''
  GENERATE PUB KEY
@@ -55,42 +29,24 @@ def genPubKey(idRaw):
     randInt = random.randint(0, n)
     digest_maker = hmac.new(str(randInt), idRaw, hashlib.sha256)
     digest = digest_maker.hexdigest()
-    digestInt = int(digest, 16) % n
+    pubHatInt = int(digest, 16) % n
+    pubKey = egcd(pubHatInt, n)[1] % n
     try:
         # Check for sqrt modulus
-        c1 = tonelli(digestInt,p)
-        c2 = tonelli(digestInt,q)
-        return randInt
+        c1 = tonelli(pubHatInt,p)
+        c2 = tonelli(pubHatInt,q)
+        return randInt, pubKey
     except:
-        return False
+        return False, False
 
 # Generate k keys
 kMax = 0
 while(kMax < k):
-    jind = genPubKey(idRaw)
-    if (jind):
-        jIndices.append(jind)
+    j, v = genPubKey(idRaw)
+    if (j):
+        jIndices.append(j)
+        publicKeys.append(v)
         kMax += 1
-
-'''
- GET PUB KEYS
-    from the j indices, which we generated above, get the
-    respected pub key
-
-    idRaw = string of users identity
-    j = indices determined on creation of public key
-'''
-def getPubKey(idRaw, j):
-    digest_maker = hmac.new(str(j), idRaw, hashlib.sha256)
-    digest = digest_maker.hexdigest()
-    pubKeyInt = int(digest, 16) % n
-    return pubKeyInt
-
-for i in jIndices:
-    publicKeys.append(getPubKey(idRaw,i))
-
-print "---- Printing Public Keys ----"
-print publicKeys
 
 '''
  GENERATE SECRET KEY
@@ -99,9 +55,11 @@ print publicKeys
     n = modulus, product of p & q
 '''
 def genSecretKey(v, p, q, n):
+    v = egcd(v, n)[1] % n
     b1 = tonelli(v % p, p)
     b2 = tonelli(v % q, q) 
 
+    # Square root signs
     a = [b1, b2, b1, b2*-1, b1*-1, b2*-1, b1*-1, b2]
     j = 0
     smallest = -1
@@ -117,6 +75,13 @@ def genSecretKey(v, p, q, n):
 
     return smallest
 
-print "---- Printing Secret Keys ----"
+
 for v in publicKeys:
-    print genSecretKey(v, p, q, n)
+    secretKeys.append(genSecretKey(v, p, q, n))
+
+os.system('color a')
+print "##Printing public Keys:"
+print publicKeys
+
+print "##Printing Secret Keys:"
+print secretKeys
