@@ -4,12 +4,6 @@ from fractions import gcd
 
 sys.setrecursionlimit(1000000)  # long type,32bit OS 4B,64bit OS 8B(1bit for sign)
 
-p = 7  
-q = 11
-n = p*q
-v = 71
-
-idRaw = 'Sirvan Almasi || 26/01/1992 || Saqqez || Sirvan3tr@gmail.com'
 # return (g, x, y) a*x + b*y = gcd(x, y)
 def egcd(a, b):
     if a == 0:
@@ -73,84 +67,3 @@ def tonelli(n, p):
         t = (t * c) % p
         m = i
     return r
-
-egcdR = egcd(v, n)
-vHat = egcdR[1] % n
-print vHat
-print egcdR
-b1 = 0
-b2 = 0
-a = 0
-
-
-n = [p, q]
-a = [vHat**2 % q, vHat**2 % p]
-print "v and % p and q"
-print vHat**2 % p
-print vHat**2 % q
-print "----------end of"
-
-
-b1 = vHat**2 % p
-b2 = vHat**2 % q
-
-print chinese_remainder(n, a)
-
-print "----------newww---------"
-a = [b1, b2, b1, b2*-1, b1*-1, b2*-1, b1*-1, b2]
-j = 0
-smallest = -1
-for i in range(0,4):
-    n = [p, q]
-    c = [a[j], a[j+1]]
-    cr = chinese_remainder(n, c)
-    print cr
-    if (smallest<0):
-        smallest = cr
-    elif(cr < smallest):
-        smallest = cr
-    j +=2
-
-print smallest
-
-print "---------using tonelli method"
-print "v and % p and q"
-print v % p
-print v % q
-print "----------end of"
-try:
-    b1 = tonelli(v % p, p)
-except:
-    b1 = 0
-
-try:
-    b2 = tonelli(v % q, q)  
-except:
-    b2 = 0
-
-
-print b1
-print b2
-
-if (b1 != 0 and b2 != 0):
-    a = [b1, b2, b1, b2*-1, b1*-1, b2*-1, b1*-1, b2]
-    j = 0
-    smallest = -1
-    for i in range(0,4):
-        n = [p, q]
-        c = [a[j], a[j+1]]
-        cr = chinese_remainder(n, c)
-        print cr
-        if (smallest<0):
-            smallest = cr
-        elif(cr < smallest):
-            smallest = cr
-        j +=2
-
-    print smallest
-elif (b1 == 0):
-    smallest = b2 % q
-elif (b2 ==0):
-    smallest = b1 % p
-
-print smallest
