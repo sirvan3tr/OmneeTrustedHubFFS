@@ -2,19 +2,23 @@
  Author: Sirvan Almasi @ Imperial College London
  August 2018
  Dissertation Project
+
+ This code represents a trusted organisation with the knowledge
+ of p and q, factors of n, thus enabling them to create secret 
+ keys for everyone using the same n.
 '''
 
 from functions import *
 import os
-import hmac, hashlib, random
+import hmac, hashlib, random, csv
 
 #16 bit primes, generated using openssl
 #not to be used for production
-p = 56999
-q = 58403
+p = 56999 # Secret
+q = 58403 # Secret
 n = p*q
 nHex = hex(n)
-k = 1 # number of keys
+k = 10 # number of keys
 
 idRaw = 'Sirvan Almasi || 26/01/1992 || Saqqez || Sirvan3tr@gmail.com'
 
@@ -85,3 +89,33 @@ print publicKeys
 
 print "##Printing Secret Keys:"
 print secretKeys
+
+print "##Printing j indices:"
+print jIndices
+
+print "##Printing n:"
+print n
+
+print "##Printing I:"
+print idRaw
+
+
+
+
+ofile  = open('keys.csv', "wb")
+writer = csv.writer(ofile, delimiter=',')
+
+writer.writerow(['Public Keys', 'Secret Keys', 'j', 'n', 'I'])
+writer.writerow(publicKeys)
+writer.writerow([])
+writer.writerow(secretKeys)
+writer.writerow([])
+writer.writerow(jIndices)
+writer.writerow([])
+writer.writerow([n])
+writer.writerow([])
+writer.writerow([idRaw])
+
+ofile.close()
+
+
